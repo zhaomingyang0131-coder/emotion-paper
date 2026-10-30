@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f1e9">
+  <meta name="description" content="给情绪一张纸，写下心事，再用自己喜欢的方式轻轻放下。">
+  <title>情绪小纸条 · 给心情一个出口</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="情绪小纸条首页">
+        <span class="brand-icon" aria-hidden="true">✳</span>
+        <span>情绪小纸条<small>给心情一个出口</small></span>
+      </a>
+      <span class="top-note"><span aria-hidden="true">✦</span> 只属于这一刻</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow"><span></span> A LITTLE SPACE FOR YOU <span></span></p>
+        <h1 id="page-title">把心事，<em>写在纸上。</em></h1>
+        <p class="intro-copy">不必整理语言，也不用急着开心。<br>此刻的你，只需要尽情表达。</p>
+      </section>
+
+      <section class="workspace" id="workspace" aria-label="写下并释放心事">
+        <div class="paper-tools">
+          <span>一张可以放心表达的纸</span>
+          <button type="button" class="expand-button" id="expand-button" aria-pressed="false"><span aria-hidden="true">⛶</span> <span id="expand-label">放大到全屏</span></button>
+        </div>
+        <div class="scene">
+          <span class="doodle doodle-left" aria-hidden="true">✳</span>
+          <span class="doodle doodle-right" aria-hidden="true">✧</span>
+          <div class="paper-shell" id="paper-shell">
+            <div class="paper" id="paper">
+              <div class="paper-tape" aria-hidden="true"></div>
+              <div class="paper-heading"><span>DEAR ME,</span><span aria-hidden="true">✷</span></div>
+              <label class="visually-hidden" for="thought">写下你的心事</label>
+              <textarea id="thought" maxlength="2000" placeholder="今天，你有什么想说的？&#10;&#10;写在这里，就好。" spellcheck="false" autocomplete="off"></textarea>
+              <div class="paper-footer"><span>慢慢写，不着急</span><span id="counter">0 / 2000</span></div>
+            </div>
+            <div class="effect-layer" id="effect-layer" aria-hidden="true"></div>
+            <div class="ending" id="ending" hidden>
+              <span class="ending-star" aria-hidden="true">✳</span>
+              <p class="ending-kicker">A LITTLE LIGHTER · 送给此刻的你</p>
+              <h2 id="comfort-text"></h2>
+              <p class="ending-caption">愿这句话，给你一点点陪伴。</p>
+              <div class="comfort-controls">
+                <button type="button" class="comfort-button" id="speak-button"><span aria-hidden="true">◖))</span> 听一听</button>
+                <button type="button" class="comfort-button" id="next-comfort">换一句 <span aria-hidden="true">↻</span></button>
+              </div>
+              <p class="speech-hint" id="speech-hint" aria-live="polite"></p>
+              <button type="button" class="restart" id="restart">再写一张 <span aria-hidden="true">↗</span></button>
+            </div>
+          </div>
+          <div class="bin" id="bin" aria-hidden="true"><div class="bin-lid"></div><div class="bin-body"><i></i><i></i><i></i></div></div>
+          <aside class="voice-panel" id="voice-panel" aria-label="录下你的声音">
+            <div class="voice-title"><span aria-hidden="true">✷</span> 也可以说出来</div>
+            <p class="voice-description">不想打字时，就对着纸说一说。</p>
+            <button type="button" class="record-button" id="record-button" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3m-3 0h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              <span id="record-label">开始录音</span>
+            </button>
+            <div class="recording-review" id="recording-review" hidden>
+              <span class="recording-title">你的声音，可随时回听</span>
+              <audio id="recording-audio" controls preload="metadata" aria-label="回听录音"></audio>
+              <button type="button" class="delete-recording" id="delete-recording">⌫ 删除这段录音</button>
+            </div>
+            <p class="record-hint" id="record-hint" aria-live="polite">录音只留在当前页面，最多 2 分钟。</p>
+          </aside>
+        </div>
+
+        <div class="actions" id="actions">
+          <div class="actions-heading"><span></span><p>写好了，就用喜欢的方式放下它</p><span></span></div>
+          <div class="action-list">
+            <button type="button" class="action-button" data-action="tear" disabled>
+              <span class="action-icon icon-tear" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M7 5h18v22H7zM17 5l-3 5 4 3-4 4 3 3-2 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span><strong>从中撕开</strong><small>把烦恼一分为二</small></span>
+              <span class="action-arrow" aria-hidden="true">↗</span>
+            </button>
+            <button type="button" class="action-button" data-action="shred" disabled>
+              <span class="action-icon icon-shred" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M6 7h20M8 11h16M9 15v4m5-4v7m5-7v4m5-4v7M9 24v1m10-2v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              <span><strong>粉碎心事</strong><small>让它散落在风里</small></span>
+              <span class="action-arrow" aria-hidden="true">↗</span>
+            </button>
+            <button type="button" class="action-button" data-action="crumple" disabled>
+              <span class="action-icon icon-crumple" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M10 6h12l2 5-2 2 3 5-4 7H11l-4-7 3-5-2-2 2-5ZM10 13l5 2-4 3 5 5 3-5-4-3 5-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span><strong>揉团丢掉</strong><small>把它投进垃圾桶</small></span>
+              <span class="action-arrow" aria-hidden="true">↗</span>
+            </button>
+          </div>
+          <p class="action-hint" id="action-hint">先写点什么，或者录下你的声音 <span aria-hidden="true">↑</span></p>
+        </div>
+      </section>
+
+      <p class="privacy"><span aria-hidden="true">♡</span> 文字和录音只停留在当前页面，不会上传或保存。刷新或关闭页面后将消失。</p>
+    </main>
+    <footer>TAKE YOUR TIME <span aria-hidden="true">✦</span> 对自己温柔一点</footer>
+    <p class="visually-hidden" id="status" role="status" aria-live="polite"></p>
+  </div>
+</body>
+</html>
