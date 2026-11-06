@@ -4,22 +4,58 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f1e9">
-  <meta name="description" content="给情绪一张纸，写下心事，再用自己喜欢的方式轻轻放下。">
-  <title>情绪小纸条 · 给心情一个出口</title>
+  <meta name="description" content="一个私密的小空间，写下心事，随机遇见真实的瞬间，也慢慢理清自己的想法。">
+  <title>情绪小纸条 · 慢慢发现自己</title>
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
 <body>
   <div class="page">
     <header class="topbar">
-      <a class="brand" href="./" aria-label="情绪小纸条首页">
+      <a class="brand" href="./" data-go="home" aria-label="情绪小纸条首页">
         <span class="brand-icon" aria-hidden="true">✳</span>
-        <span>情绪小纸条<small>给心情一个出口</small></span>
+        <span>情绪小纸条<small>慢慢发现自己</small></span>
       </a>
-      <span class="top-note"><span aria-hidden="true">✦</span> 只属于这一刻</span>
+      <nav class="site-nav" aria-label="页面导航">
+        <button type="button" data-go="home" aria-current="page">首页</button>
+        <button type="button" data-go="paper">写下心事</button>
+        <button type="button" data-go="encounter">随机遇见</button>
+        <button type="button" data-go="reflect">认识自己</button>
+        <button type="button" data-go="step">面对一点点</button>
+      </nav>
     </header>
 
     <main>
+      <section class="view home-view" id="home-view" data-view="home" aria-labelledby="home-title">
+        <div class="home-hero">
+          <div class="hero-copy">
+            <p class="section-kicker"><span aria-hidden="true">✳</span> A LITTLE SPACE FOR YOU</p>
+            <h1 id="home-title" tabindex="-1">给自己一点空间，<br><em>慢慢来。</em></h1>
+            <p class="hero-description">写下心事，遇见一些真实的瞬间。<br>也可以从一件小事开始，慢慢认识自己。</p>
+            <div class="hero-actions">
+              <button type="button" class="primary-button" data-go="paper">写下此刻的心事 <span aria-hidden="true">↗</span></button>
+              <button type="button" class="text-button" data-go="encounter">随机遇见一个瞬间 <span aria-hidden="true">↗</span></button>
+            </div>
+            <p class="hero-privacy"><span aria-hidden="true">♧</span> 不需要账号，输入不会上传</p>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="art-window"><span class="art-sun"></span><span class="art-cloud art-cloud-one"></span><span class="art-cloud art-cloud-two"></span><span class="art-hill art-hill-back"></span><span class="art-hill art-hill-front"></span></div>
+            <div class="art-note"><span>TAKE YOUR TIME</span><i></i><i></i><i></i><b>✳</b></div>
+            <span class="art-spark art-spark-one">✳</span><span class="art-spark art-spark-two">✦</span>
+          </div>
+        </div>
+        <div class="home-choices">
+          <div class="choices-heading"><div><p class="section-kicker">A SPACE OF YOUR OWN</p><h2>此刻，你想做什么？</h2></div><p>不需要按顺序，选一个就好。</p></div>
+          <div class="choice-grid">
+            <button type="button" class="choice-card choice-paper" data-go="paper"><span class="choice-icon" aria-hidden="true">✎</span><span class="choice-body"><strong>写下心事</strong><small>文字或声音，留在这一页。</small></span><span class="choice-arrow" aria-hidden="true">↗</span></button>
+            <button type="button" class="choice-card choice-encounter" data-go="encounter"><span class="choice-icon" aria-hidden="true">✧</span><span class="choice-body"><strong>随机遇见</strong><small>遇见一个有出处的真实瞬间。</small></span><span class="choice-arrow" aria-hidden="true">↗</span></button>
+            <button type="button" class="choice-card choice-reflect" data-go="reflect"><span class="choice-icon" aria-hidden="true">☼</span><span class="choice-body"><strong>慢慢认识自己</strong><small>把混在一起的想法分开看看。</small></span><span class="choice-arrow" aria-hidden="true">↗</span></button>
+            <button type="button" class="choice-card choice-step" data-go="step"><span class="choice-icon" aria-hidden="true">↗</span><span class="choice-body"><strong>面对一点点</strong><small>如果愿意，从一小步开始。</small></span><span class="choice-arrow" aria-hidden="true">↗</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="view paper-view" id="paper-view" data-view="paper" aria-labelledby="page-title" hidden>
       <section class="intro" aria-labelledby="page-title">
         <p class="eyebrow"><span></span> A LITTLE SPACE FOR YOU <span></span></p>
         <h1 id="page-title">把心事，<em>写在纸上。</em></h1>
@@ -47,12 +83,12 @@
               <span class="ending-star" aria-hidden="true">✳</span>
               <p class="ending-kicker">A LITTLE LIGHTER · 送给此刻的你</p>
               <h2 id="comfort-text"></h2>
-              <p class="ending-caption">愿这句话，给你一点点陪伴。</p>
+              <p class="ending-caption">你可以在这里待一会儿，也可以随时离开。</p>
               <div class="comfort-controls">
                 <button type="button" class="comfort-button" id="speak-button"><span aria-hidden="true">◖))</span> 听一听</button>
                 <button type="button" class="comfort-button" id="next-comfort">换一句 <span aria-hidden="true">↻</span></button>
               </div>
-              <p class="speech-hint" id="speech-hint" aria-live="polite"></p>
+              <p class="speech-hint" id="speech-hint" aria-live="polite">需要声音时，可以自己点“听一听”。</p>
               <button type="button" class="restart" id="restart">再写一张 <span aria-hidden="true">↗</span></button>
             </div>
           </div>
@@ -97,9 +133,67 @@
       </section>
 
       <p class="privacy"><span aria-hidden="true">♡</span> 文字和录音只停留在当前页面，不会上传或保存。刷新或关闭页面后将消失。</p>
+      </section>
+
+      <section class="view inner-view encounter-view" id="encounter-view" data-view="encounter" aria-labelledby="encounter-title" hidden>
+        <div class="view-heading"><p class="section-kicker">A LITTLE ENCOUNTER</p><h1 id="encounter-title" tabindex="-1">随机遇见<em>一个瞬间。</em></h1><p>你可以慢慢看，也可以随时换一个或离开。</p></div>
+        <article class="moment-card" id="moment-card" aria-live="polite" aria-atomic="true">
+          <div class="moment-art" id="moment-art" aria-hidden="true"><span class="moment-orb"></span><span class="moment-line moment-line-one"></span><span class="moment-line moment-line-two"></span><span class="moment-spark">✦</span></div>
+          <div class="moment-content">
+            <p class="moment-category" id="moment-category"></p>
+            <h2 id="moment-title"></h2>
+            <p class="moment-description" id="moment-description"></p>
+            <p class="moment-source">资料来源：<a id="moment-source" href="#" target="_blank" rel="noopener noreferrer"></a> <span>↗</span></p>
+            <p class="moment-disclaimer" id="moment-disclaimer"></p>
+          </div>
+        </article>
+        <div class="view-actions"><button type="button" class="primary-button" id="next-moment">再遇见一个 <span aria-hidden="true">↻</span></button><button type="button" class="secondary-button" data-go="home">回到首页</button></div>
+        <p class="view-note">目前收录少量有出处的自然资料和公有领域古诗。其他文字与图片会在确认授权后再加入。</p>
+      </section>
+
+      <section class="view inner-view reflection-view" id="reflect-view" data-view="reflect" aria-labelledby="reflect-title" hidden>
+        <div class="view-heading"><p class="section-kicker">GET TO KNOW YOURSELF</p><h1 id="reflect-title" tabindex="-1">把想法<em>分开看看。</em></h1><p>不需要回答所有问题，也没有标准答案。</p></div>
+        <form class="reflection-form" id="reflection-form" autocomplete="off">
+          <div class="reflection-intro"><span aria-hidden="true">✳</span><div><h2>想到一件事时，可以问问自己</h2><p>喜欢、擅长和能否完成，是不同的问题。你可以只写想写的部分。</p></div></div>
+          <label class="reflection-item"><span class="reflection-number">01</span><span class="reflection-label">这件事里，有我感兴趣的部分吗？<small>不知道也没关系。</small></span><textarea rows="3" maxlength="600" placeholder="可以留空。" spellcheck="false" autocomplete="off"></textarea></label>
+          <label class="reflection-item"><span class="reflection-number">02</span><span class="reflection-label">我已经会什么，还需要什么帮助？<small>不必现在就有答案。</small></span><textarea rows="3" maxlength="600" placeholder="可以留空。" spellcheck="false" autocomplete="off"></textarea></label>
+          <label class="reflection-item"><span class="reflection-number">03</span><span class="reflection-label">眼前要做的事情，有什么限制？<small>比如时间、精力或可用的支持。</small></span><textarea rows="3" maxlength="600" placeholder="可以留空。" spellcheck="false" autocomplete="off"></textarea></label>
+          <div class="form-footer"><p>只留在当前页面，刷新或关闭后会消失。</p><button type="reset" class="quiet-button">清空这些内容</button></div>
+        </form>
+        <div class="view-actions"><button type="button" class="primary-button" data-go="step">如果愿意，面对一点点 <span aria-hidden="true">↗</span></button><button type="button" class="secondary-button" data-go="home">回到首页</button></div>
+      </section>
+
+      <section class="view inner-view step-view" id="step-view" data-view="step" aria-labelledby="step-title" hidden>
+        <div class="view-heading"><p class="section-kicker">ONE SMALL STEP</p><h1 id="step-title" tabindex="-1">面对<em>一点点。</em></h1><p>如果愿意，可以看看下一步。现在不做也可以。</p></div>
+        <div class="step-panel">
+          <div class="step-heading"><span class="step-heading-icon" aria-hidden="true">↗</span><div><h2>先选择更接近的一项</h2><p>这里的建议仅供参考，不会评价或记录你的选择。</p></div></div>
+          <div class="topic-list" role="group" aria-label="选择想面对的方向">
+            <button type="button" class="topic-button" data-topic="study" aria-pressed="false">学业压力</button>
+            <button type="button" class="topic-button" data-topic="career" aria-pressed="false">就业困惑</button>
+            <button type="button" class="topic-button" data-topic="unsure" aria-pressed="false">还不确定</button>
+          </div>
+          <div class="suggestions" id="suggestions" hidden><h3 id="suggestion-heading"></h3><div id="suggestion-list" class="suggestion-list"></div></div>
+          <div class="chosen-step" id="chosen-step" role="status" aria-live="polite" hidden></div>
+          <div class="step-divider"></div>
+          <label class="own-step" for="own-step"><span>或者，写下你自己的下一步</span><small>只在当前页面显示，不上传；可以留空。</small></label>
+          <textarea id="own-step" maxlength="300" rows="3" placeholder="不用着急想好。" spellcheck="false" autocomplete="off"></textarea>
+          <p class="step-reminder">没有计时、打卡或完成要求。想休息时也可以停下。</p>
+        </div>
+        <div class="view-actions"><button type="button" class="secondary-button" data-go="home">先到这里，回到首页</button><button type="button" class="text-button" data-go="paper">想写下来 <span aria-hidden="true">↗</span></button></div>
+      </section>
+
+      <details class="support-details"><summary>如果想找人聊聊 <span aria-hidden="true">↗</span></summary><p>你可以联系信任的人，也可以了解学校的心理咨询或就业指导服务。本网页不提供心理诊断或治疗。遇到紧急危险时，请联系当地紧急服务或身边可信赖的人。</p></details>
     </main>
-    <footer>TAKE YOUR TIME <span aria-hidden="true">✦</span> 对自己温柔一点</footer>
+    <footer>TAKE YOUR TIME <span aria-hidden="true">✦</span> 输入只留在当前页面</footer>
     <p class="visually-hidden" id="status" role="status" aria-live="polite"></p>
   </div>
+  <dialog class="release-dialog" id="release-dialog" aria-labelledby="release-dialog-title" aria-describedby="release-dialog-description">
+    <form method="dialog">
+      <span class="dialog-icon" aria-hidden="true">✳</span>
+      <h2 id="release-dialog-title">准备好放下这张纸了吗？</h2>
+      <p id="release-dialog-description">继续后，纸上的文字和录音会一起清除，无法找回。</p>
+      <div class="dialog-actions"><button type="submit" class="secondary-button" value="cancel">再留一会儿</button><button type="button" class="primary-button" id="confirm-release">确认放下</button></div>
+    </form>
+  </dialog>
 </body>
 </html>

@@ -27,6 +27,23 @@ const comfortText = document.querySelector("#comfort-text");
 const speakButton = document.querySelector("#speak-button");
 const nextComfortButton = document.querySelector("#next-comfort");
 const speechHint = document.querySelector("#speech-hint");
+const releaseDialog = document.querySelector("#release-dialog");
+const confirmReleaseButton = document.querySelector("#confirm-release");
+const views = [...document.querySelectorAll("[data-view]")];
+const navigationButtons = [...document.querySelectorAll("[data-go]")];
+const momentCard = document.querySelector("#moment-card");
+const momentArt = document.querySelector("#moment-art");
+const momentCategory = document.querySelector("#moment-category");
+const momentTitle = document.querySelector("#moment-title");
+const momentDescription = document.querySelector("#moment-description");
+const momentSource = document.querySelector("#moment-source");
+const momentDisclaimer = document.querySelector("#moment-disclaimer");
+const nextMomentButton = document.querySelector("#next-moment");
+const topicButtons = [...document.querySelectorAll("[data-topic]")];
+const suggestions = document.querySelector("#suggestions");
+const suggestionHeading = document.querySelector("#suggestion-heading");
+const suggestionList = document.querySelector("#suggestion-list");
+const chosenStep = document.querySelector("#chosen-step");
 
 const comforts = [
   "你不需要立刻振作，慢一点也没有关系。",
@@ -72,6 +89,131 @@ let recordingState = "idle";
 let recordingUrl = null;
 let captureSession = null;
 let nativeFullscreenActive = false;
+let recordingRequestId = 0;
+let pendingRelease = null;
+let releaseTimer = null;
+let lastMoment = -1;
+
+// Clearly marked factual summaries and public-domain original verse.
+// Each source opens only when the visitor chooses to follow the link.
+const moments = [
+  {
+    category: "天空 · 月亮", title: "月牙暗处的微光", art: "sky",
+    description: "有时，月牙之外的暗面也隐约可见。这是太阳光被地球反射后，又照亮了月球的表面。",
+    source: "NASA · 月相与地照（英文）", url: "https://science.nasa.gov/moon/moon-phases/"
+  },
+  {
+    category: "天空 · 流星", title: "每年路过的流星雨", art: "sky",
+    description: "英仙座流星雨通常在每年八月前后达到高峰。它的流星与斯威夫特—塔特尔彗星留下的碎屑有关。",
+    source: "NASA · 流星雨（英文）", url: "https://science.nasa.gov/solar-system/meteors-meteorites/meteor-showers/"
+  },
+  {
+    category: "海洋 · 生物", title: "会发光的生命", art: "ocean",
+    description: "一些生物能通过体内的化学反应发光。萤火虫和一些海洋生物，都拥有这种能力。",
+    source: "NOAA · 生物发光（英文）", url: "https://oceanservice.noaa.gov/facts/biolum.html"
+  },
+  {
+    category: "海洋 · 珊瑚", title: "珊瑚与藻类", art: "ocean",
+    description: "珊瑚是动物。许多珊瑚的组织里生活着微小的藻类，它们之间存在共生关系。",
+    source: "NOAA · 珊瑚是什么（英文）", url: "https://oceanservice.noaa.gov/facts/coral.html"
+  },
+  {
+    category: "自然 · 海岸", title: "海水的涨落", art: "ocean",
+    description: "沿海的潮起潮落，与月球和太阳的引力有关。高低潮的时间和幅度因地点而不同。",
+    source: "NOAA · 什么是潮汐（英文）", url: "https://oceanservice.noaa.gov/facts/tides.html"
+  },
+  {
+    category: "自然 · 树木", title: "一棵巨杉", art: "forest",
+    description: "美国红杉与国王峡谷国家公园里，有一棵名叫谢尔曼将军树的巨杉。公园资料记载它高约 83.8 米。",
+    source: "美国国家公园管理局 · 谢尔曼将军树（英文）", url: "https://www.nps.gov/seki/learn/nature/sherman.htm"
+  },
+  {
+    category: "天空 · 白天", title: "白天也能看见月亮", art: "sky",
+    description: "月亮并不只在夜里出现。在合适的月相、天气和地点，白天也能看见它。",
+    source: "NASA · 月相与白天的月亮（英文）", url: "https://science.nasa.gov/moon/moon-phases/"
+  },
+  {
+    category: "文字 · 唐代", title: "山居秋暝", art: "forest", original: true,
+    description: "明月松間照，清泉石上流。",
+    source: "王維《山居秋暝》 · 维基文库", url: "https://zh.wikisource.org/wiki/%E5%B1%B1%E5%B1%85%E7%A7%8B%E6%9A%9D"
+  }
+];
+
+const stepOptions = {
+  study: { heading: "关于学业，可以考虑", items: ["打开需要完成的任务，看看具体要求", "给任务写一个标题或列出一个问题", "向同学或老师询问一个具体问题"] },
+  career: { heading: "关于就业，可以考虑", items: ["看看一份岗位信息里写了哪些职责", "写下一个关于就业的疑问", "了解学校是否有就业指导或分享活动"] },
+  unsure: { heading: "还不确定时，可以考虑", items: ["写下现在最挂心的一件事", "找一个信任的人聊一聊", "先休息，等愿意的时候再回来"] }
+};
+
+function showView(name) {
+  if (!views.some((view) => view.dataset.view === name)) return;
+  if (name !== "paper") {
+    if (recordingState === "recording") stopRecording();
+    else if (recordingState === "requesting") {
+      recordingRequestId += 1;
+      recordingState = "idle";
+      updateRecordingUI("已离开纸张，录音没有开始。");
+    }
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+  }
+  views.forEach((view) => { view.hidden = view.dataset.view !== name; });
+  document.querySelectorAll(".site-nav [data-go]").forEach((button) => {
+    if (button.dataset.go === name) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
+  });
+  if (name === "encounter" && lastMoment < 0) pickMoment();
+  const heading = document.querySelector(`#${name}-view h1`);
+  if (heading) heading.focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function pickMoment() {
+  let index = Math.floor(Math.random() * (lastMoment < 0 ? moments.length : moments.length - 1));
+  if (lastMoment >= 0 && index >= lastMoment) index += 1;
+  lastMoment = index;
+  const moment = moments[index];
+  momentCard.dataset.moment = String(index);
+  momentArt.className = `moment-art art-${moment.art}`;
+  momentCategory.textContent = moment.category;
+  momentTitle.textContent = moment.title;
+  momentDescription.textContent = moment.description;
+  momentSource.textContent = moment.source;
+  momentSource.href = moment.url;
+  momentDisclaimer.textContent = moment.original
+    ? "古诗原文摘录，属于公有领域。打开来源链接会访问外部网站。"
+    : "内容依据公开资料整理，并非原文摘录。打开来源链接会访问外部网站。";
+}
+
+function chooseTopic(topic) {
+  const options = stepOptions[topic];
+  if (!options) return;
+  topicButtons.forEach((button) => { button.setAttribute("aria-pressed", String(button.dataset.topic === topic)); });
+  suggestionHeading.textContent = options.heading;
+  suggestionList.replaceChildren();
+  chosenStep.hidden = true;
+  chosenStep.textContent = "";
+  options.items.forEach((item) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "suggestion-button";
+    button.setAttribute("aria-pressed", "false");
+    button.textContent = item;
+    button.addEventListener("click", () => {
+      suggestionList.querySelectorAll("button").forEach((option) => { option.setAttribute("aria-pressed", String(option === button)); });
+      chosenStep.textContent = `选中的参考：${item}。不想做时，也可以随时停下。`;
+      chosenStep.hidden = false;
+    });
+    suggestionList.append(button);
+  });
+  suggestions.hidden = false;
+}
+
+navigationButtons.forEach((button) => button.addEventListener("click", (event) => {
+  event.preventDefault();
+  showView(button.dataset.go);
+}));
+nextMomentButton.addEventListener("click", pickMoment);
+topicButtons.forEach((button) => button.addEventListener("click", () => chooseTopic(button.dataset.topic)));
 
 function updateInput() {
   const hasText = thought.value.trim().length > 0;
@@ -162,11 +304,12 @@ async function startRecording() {
     return;
   }
   recordingState = "requesting";
+  const requestId = ++recordingRequestId;
   updateRecordingUI();
   let stream;
   try {
     stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    if (recordingState !== "requesting" || state !== "writing") {
+    if (requestId !== recordingRequestId || recordingState !== "requesting" || state !== "writing") {
       stream.getTracks().forEach((track) => track.stop());
       return;
     }
@@ -210,6 +353,7 @@ async function startRecording() {
     updateRecordingUI();
   } catch (error) {
     if (stream) stream.getTracks().forEach((track) => track.stop());
+    if (requestId !== recordingRequestId) return;
     captureSession = null;
     recordingState = "idle";
     const denied = error && (error.name === "NotAllowedError" || error.name === "PermissionDeniedError");
@@ -223,6 +367,7 @@ recordButton.addEventListener("click", () => {
 });
 deleteRecordingButton.addEventListener("click", () => { clearRecording(); recordButton.focus(); });
 window.addEventListener("pagehide", () => {
+  recordingRequestId += 1;
   recordingState = "idle";
   if (captureSession) {
     captureSession.discard = true;
@@ -230,6 +375,22 @@ window.addEventListener("pagehide", () => {
     stopTracks(captureSession);
   }
   clearRecording();
+  thought.value = "";
+  document.querySelectorAll("#reflection-form textarea").forEach((input) => { input.value = ""; });
+  document.querySelector("#own-step").value = "";
+  if (releaseTimer !== null) window.clearTimeout(releaseTimer);
+  releaseTimer = null;
+  state = "writing";
+  effects.replaceChildren();
+  paper.classList.remove("is-gone");
+  paper.removeAttribute("aria-hidden");
+  actions.hidden = false;
+  ending.hidden = true;
+  voicePanel.hidden = false;
+  bin.classList.remove("is-visible");
+  expandButton.disabled = false;
+  if (releaseDialog.open) releaseDialog.close();
+  updateInput();
   if (window.speechSynthesis) window.speechSynthesis.cancel();
 });
 
@@ -268,7 +429,11 @@ function speakComfort() {
 }
 
 speakButton.addEventListener("click", speakComfort);
-nextComfortButton.addEventListener("click", () => { pickComfort(); speakComfort(); });
+nextComfortButton.addEventListener("click", () => {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  pickComfort();
+  speechHint.textContent = "需要声音时，可以自己点“听一听”。";
+});
 
 // Text is inserted as textContent, never as HTML, and remains in this page only.
 function makeSnapshot(width, height, text) {
@@ -371,7 +536,8 @@ function release(action) {
   paper.classList.add("is-gone");
   paper.setAttribute("aria-hidden", "true");
 
-  window.setTimeout(() => {
+  releaseTimer = window.setTimeout(() => {
+    releaseTimer = null;
     // Remove both the original text and the animation copies after the action.
     thought.value = "";
     effects.replaceChildren();
@@ -382,13 +548,29 @@ function release(action) {
     expandButton.disabled = false;
     pickComfort();
     status.textContent = "纸张已经放下。你可以再写一张。";
-    restart.focus();
-    speakComfort();
+    speechHint.textContent = "需要声音时，可以自己点“听一听”。";
+    if (!document.querySelector("#paper-view").hidden) restart.focus();
   }, reducedMotion.matches ? 50 : duration);
 }
 
 thought.addEventListener("input", updateInput);
-actionButtons.forEach((button) => button.addEventListener("click", () => release(button.dataset.action)));
+actionButtons.forEach((button) => button.addEventListener("click", () => {
+  if (button.disabled) return;
+  pendingRelease = button.dataset.action;
+  if (typeof releaseDialog.showModal === "function") releaseDialog.showModal();
+  else if (window.confirm("放下后，纸上的文字和录音会一起清除，无法找回。")) {
+    const action = pendingRelease;
+    pendingRelease = null;
+    release(action);
+  } else pendingRelease = null;
+}));
+releaseDialog.addEventListener("close", () => { pendingRelease = null; });
+confirmReleaseButton.addEventListener("click", () => {
+  const action = pendingRelease;
+  releaseDialog.close();
+  pendingRelease = null;
+  if (action) release(action);
+});
 restart.addEventListener("click", () => {
   if (state !== "released") return;
   state = "writing";
